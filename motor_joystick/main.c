@@ -100,7 +100,7 @@ int main(void) {
   uchar adc0, adc1;
   if (wiringPiSetup() ==
       -1) { // when initialize wiring failed,print messageto screen
-    printf("setup wiringPi failed !");
+    printf("setup wiringPi failed !\n");
     return 1;
   }
   softPwmCreate(MOTOR_PIN_1, 0, PWM_RANGE);
@@ -140,9 +140,9 @@ int main(void) {
     }
     // set servo pwm
     {
-      int val = adc1; // todo map this
+      int val = adc1 * (SERVO_PWM_MAX - SERVO_PWM_MIN) / 255 + SERVO_PWM_MIN;
+      printf("servo pwm %d\n", val);
       softPwmWrite(SERVO_PIN, val);
-      
     }
     delay(100);
   }
