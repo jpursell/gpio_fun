@@ -2,14 +2,33 @@
 #include <softPwm.h>
 #include <wiringPi.h>
 
-#define MOTOR_PIN_1 0 // GP17
-#define MOTOR_PIN_2 2 // GP27
-#define MOTOR_ENABLE 3 // GP22
-#define ADC_CS 6 // GP25
-#define ADC_CLK 4 // GP23
-#define ADC_DIO 5 // GP24
+#define MOTOR_PIN_1 0 // GP17 -> L293D:7
+#define MOTOR_PIN_2 2 // GP27 -> L293D:2
+#define MOTOR_ENABLE 3 // GP22 -> L293D:1
+#define ADC_CS 6 // GP25 -> ADC0834:2
+#define ADC_CLK 4 // GP23 -> ADC0834:12
+#define ADC_DIO 5 // GP24 -> ADC0834:[13,10]
 #define PWM_RANGE 100
 #define ANALOG_RANGE 256
+
+// L293D
+// 1|12EN_Vcc1|16
+// 2|1A_____4A|15
+// 3|1Y_____4Y|14
+// 4|HS&G_HS&G|13
+// 5|HS&G_HS&G|12
+// 6|2Y_____3Y|11
+// 7|2A_____3A|10
+// 8|Vcc2_34EN|9
+
+// ADC0834
+// 1|V+____VCC|14
+// 2|CS_____DI|13
+// 3|CH0___CLK|12
+// 4|CH1__SARS|11
+// 5|CH2____DO|10
+// 6|CH3___REF|9
+// 7|DGND_AGND|8
 
 typedef unsigned char uchar;
 typedef unsigned int uint;
