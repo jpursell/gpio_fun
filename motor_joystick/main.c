@@ -1,85 +1,18 @@
-/**********************************************************************
- * Filename    : 1.3.1_Motor.c
- * Description : Controlling a motor.
- * Author      : Robot
- * E-mail      : support@sunfounder.com
- * website     : www.sunfounder.com
- * Update      : Daisy    2019/08/05
- **********************************************************************/
 #include <stdio.h>
-#include <wiringPi.h>
-
-#define MotorPin1 0
-#define MotorPin2 2
-#define MotorEnable 3
-
-int main(void) {
-  int i;
-  if (wiringPiSetup() ==
-      -1) { // when initialize wiring failed, print message to screen
-    printf("setup wiringPi failed !");
-    return 1;
-  }
-
-  pinMode(MotorPin1, OUTPUT);
-  pinMode(MotorPin2, OUTPUT);
-  pinMode(MotorEnable, OUTPUT);
-
-  while (1) {
-    printf("Clockwise\n");
-    delay(100);
-    digitalWrite(MotorEnable, HIGH);
-    digitalWrite(MotorPin1, HIGH);
-    digitalWrite(MotorPin2, LOW);
-    for (i = 0; i < 3; i++) {
-      delay(1000);
-    }
-
-    printf("Stop\n");
-    delay(100);
-    digitalWrite(MotorEnable, LOW);
-    for (i = 0; i < 3; i++) {
-      delay(1000);
-    }
-
-    printf("Anti-clockwise\n");
-    delay(100);
-    digitalWrite(MotorEnable, HIGH);
-    digitalWrite(MotorPin1, LOW);
-    digitalWrite(MotorPin2, HIGH);
-    for (i = 0; i < 3; i++) {
-      delay(1000);
-    }
-
-    printf("Stop\n");
-    delay(100);
-    digitalWrite(MotorEnable, LOW);
-    for (i = 0; i < 3; i++) {
-      delay(1000);
-    }
-  }
-  return 0;
-}
-
-/**********************************************************************
- * Filename    : 2.1.4_Potentiometer.c
- * Description :
- * Author      : Robot
- * E-mail      : support@sunfounder.com
- * website     : www.sunfounder.com
- * Update      : Daisy    2019/07/29
- **********************************************************************/
 #include <softPwm.h>
-#include <stdio.h>
 #include <wiringPi.h>
+
+#define MOTOR_PIN_1 0 // GP17
+#define MOTOR_PIN_2 2 // GP27
+#define MOTOR_ENABLE 3 // GP22
+#define ADC_CS 6 // GP25
+#define ADC_CLK 4 // GP23
+#define ADC_DIO 5 // GP24
+#define PWM_RANGE 100
+#define ANALOG_RANGE 256
 
 typedef unsigned char uchar;
 typedef unsigned int uint;
-
-#define ADC_CS 0
-#define ADC_CLK 1
-#define ADC_DIO 2
-#define LedPin 3
 
 uchar get_ADC_Result(uint channel) {
   uchar i;
@@ -147,14 +80,39 @@ int main(void) {
     printf("setup wiringPi failed !");
     return 1;
   }
-  softPwmCreate(LedPin, 0, 100);
+  softPwmCreate(MOTOR_PIN_1, 0, PWM_RANGE);
+  softPwmCreate(MOTOR_PIN_2, 0, PWM_RANGE);
+  pinMode(MOTOR_ENABLE, OUTPUT);
   pinMode(ADC_CS, OUTPUT);
   pinMode(ADC_CLK, OUTPUT);
+
+  // of the ANALOG_RANGE, how much middle defines the off-region
+  int mid_size = 30;
+  int low_size = (ANALOG_RANGE - mid_size) / 2;
+  int high_size = ANALOG_RANGE - mid_size - low_size;
+  int high_start = low_size + mid_size;
+  int mid_start = low_size;
+  int high_max_val = high_size - 1;
+  int low_max_val = low_size - 1;
 
   while (1) {
     analogVal = get_ADC_Result(0);
     printf("Current analogVal : %d\n", analogVal);
-    softPwmWrite(LedPin, analogVal);
+    if (analogVal >= high_start) {
+      digitalWrite(MOTOR_ENABLE, HIGH);
+      int val = (analogVal - high_start) * PWM_RANGE / high_max_val;
+      softPwmWrite(MOTOR_PIN_1, 0);
+      softPwmWrite(MOTOR_PIN_2, val);
+    }else if(analogVal >= mid_start){
+      digitalWrite(MOTOR_ENABLE, LOW);
+      softPwmWrite(MOTOR_PIN_1, LOW);
+      softPwmWrite(MOTOR_PIN_2, 0);
+    }else {
+      digitalWrite(MOTOR_ENABLE, HIGH);
+      int val = (low_max_val - analogVal) * PWM_RANGE / low_max_val;
+      softPwmWrite(MOTOR_PIN_1, val);
+      softPwmWrite(MOTOR_PIN_2, 0);
+    }
     delay(100);
   }
   return 0;
