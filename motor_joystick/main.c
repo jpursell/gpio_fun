@@ -93,7 +93,7 @@ uchar get_ADC_Result(uint channel) {
 }
 
 int main(void) {
-  uchar analogVal;
+  uchar adc0, adc1;
   if (wiringPiSetup() ==
       -1) { // when initialize wiring failed,print messageto screen
     printf("setup wiringPi failed !");
@@ -115,22 +115,28 @@ int main(void) {
   int low_max_val = low_size - 1;
 
   while (1) {
-    analogVal = get_ADC_Result(0);
-    printf("Current analogVal : %d\n", analogVal);
-    if (analogVal >= high_start) {
+    adc0 = get_ADC_Result(0);
+    adc1 = get_ADC_Result(1);
+    printf("Current adc: %d, %d\n", adc0, adc1);
+    if (adc0 >= high_start) {
       digitalWrite(MOTOR_ENABLE, HIGH);
-      int val = (analogVal - high_start) * PWM_RANGE / high_max_val;
+      int val = (adc0 - high_start) * PWM_RANGE / high_max_val;
       softPwmWrite(MOTOR_PIN_1, 0);
       softPwmWrite(MOTOR_PIN_2, val);
-    }else if(analogVal >= mid_start){
+    }else if(adc0 >= mid_start){
       digitalWrite(MOTOR_ENABLE, LOW);
       softPwmWrite(MOTOR_PIN_1, LOW);
       softPwmWrite(MOTOR_PIN_2, 0);
     }else {
       digitalWrite(MOTOR_ENABLE, HIGH);
-      int val = (low_max_val - analogVal) * PWM_RANGE / low_max_val;
+      int val = (low_max_val - adc0) * PWM_RANGE / low_max_val;
       softPwmWrite(MOTOR_PIN_1, val);
       softPwmWrite(MOTOR_PIN_2, 0);
+    }
+    // set servo pwm
+    {
+      softPwmWrite(SERVO)
+      
     }
     delay(100);
   }
