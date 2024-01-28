@@ -8,7 +8,7 @@
 #define ADC_CS 6 // GP25 -> ADC0834:2
 #define ADC_CLK 4 // GP23 -> ADC0834:12
 #define ADC_DIO 5 // GP24 -> ADC0834:[13,10]
-#define SERVO_PIN 5 // GP5 -> Servo orange
+#define SERVO_PIN 21 // GP5 -> Servo orange
 #define PWM_RANGE 100
 #define SERVO_PWM_RANGE 200
 #define SERVO_PWM_MIN 5
@@ -105,7 +105,7 @@ int main(void) {
   }
   softPwmCreate(MOTOR_PIN_1, 0, PWM_RANGE);
   softPwmCreate(MOTOR_PIN_2, 0, PWM_RANGE);
-  softPwmCreate(SERVO_PIN, 0, SERVO_PWM_RANGE);
+  softPwmCreate(SERVO_PIN, (SERVO_PWM_MIN + SERVO_PWM_MAX) / 2, SERVO_PWM_RANGE);
   pinMode(MOTOR_ENABLE, OUTPUT);
   pinMode(ADC_CS, OUTPUT);
   pinMode(ADC_CLK, OUTPUT);
