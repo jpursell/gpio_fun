@@ -140,7 +140,8 @@ int main(void) {
     }
     // set servo pwm
     {
-      softPwmWrite(SERVO)
+      int val = adc1; // todo map this
+      softPwmWrite(SERVO_PIN, val);
       
     }
     delay(100);
