@@ -1,4 +1,6 @@
+roomba/room
 motor_joystick/mj
+stepper/step
 *swp
 
 # Prerequisites
