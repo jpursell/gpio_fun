@@ -51,7 +51,7 @@ int main()
 
   printf("start \n");
   start(fd);
-  delay(3);
+  delay(1000);
   printf("stop \n");
   stop(fd);
   if (0)
