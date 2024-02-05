@@ -24,10 +24,20 @@ void stop(int fd)
   serialPutchar(fd, 173);
 }
 
+void debug_0(int fd)
+{
+  serialPutchar(fd, 0);
+}
+
+void debug_1(int fd)
+{
+  serialPutchar(fd, 255);
+}
+
 int main()
 {
+  static const int baud = 115200;
   int fd;
-  unsigned int nextTime;
 
   // Roomba Open Interface (OI)
   // https://cdn-shop.adafruit.com/datasheets/create_2_Open_Interface_Spec.pdf
@@ -37,7 +47,7 @@ int main()
   // Stop bits: 1
   // Flow control: None
   // default for wiringSerial is 8N1
-  if ((fd = serialOpen("/dev/ttyAMA0", 115200)) < 0)
+  if ((fd = serialOpen("/dev/ttyAMA0", 50)) < 0)
   {
     fprintf(stderr, "Unable to open serial device: %s\n", strerror(errno));
     return 1;
@@ -49,7 +59,17 @@ int main()
     return 1;
   }
 
+
   printf("start \n");
+  for (int i=0;i<10;i++) {
+    printf("debug_0 %d\n", i);
+    debug_0(fd);
+  }
+  for (int i=0;i<10;i++) {
+    printf("debug_1 %d\n", i);
+    debug_1(fd);
+  }
+  return 0;
   start(fd);
   delay(1000);
   printf("stop \n");
